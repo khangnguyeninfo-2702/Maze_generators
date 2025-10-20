@@ -90,7 +90,7 @@ def game_play(current_grid):
     run = True
     while run:
         screen.fill(black)
-        draw_maze(current_grid)
+        current_grid.draw_maze(screen)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -101,24 +101,6 @@ def game_play(current_grid):
         pygame.display.update()
         pygame.display.flip()
     return "main_menu"
-
-def draw_maze(current_grid):
-    color = None
-    for i in range(len(current_grid.grid)):
-        row_length = len(current_grid.grid[i])
-        for j in range(row_length):
-            if current_grid.grid[i][j] == "s":
-                color = yellow
-            elif current_grid.grid[i][j] == "e":
-                color = red
-            elif current_grid.grid[i][j] == " ":
-                color = white
-            elif current_grid.grid[i][j] == "*":
-                color = gray2
-            elif current_grid.grid[i][j] == "p":
-                color = green
-            new_cell = pygame.Rect(j*current_grid.size, i*current_grid.size, current_grid.size, current_grid.size)
-            pygame.draw.rect(screen, color, new_cell)
 
 #Main buttons
 input_dimension = Button(None, "Choose maze dimensions", (width/2, height/3),get_font(30),

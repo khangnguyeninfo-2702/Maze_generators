@@ -1,6 +1,15 @@
 import random
 import pygame
+import sys
 
+white = (255, 255, 255)
+black = (0, 0, 0)
+green = (0, 255, 0)
+red = (255, 0, 0)
+blue = (0, 0, 255)
+gray = (128, 128, 128)
+gray2 = (155, 155, 155)
+yellow = (255, 255, 0)
 
 class Grid:
     def __init__(self, cell_size, dimension):
@@ -40,6 +49,25 @@ class Grid:
         self.print_grid()
         print("Set successfully!")
 
+    def draw_maze(self, screen):
+        color = None
+        for i in range(len(self.grid)):
+            row_length = len(self.grid[i])
+            for j in range(row_length):
+                if self.grid[i][j] == "s":
+                    color = yellow
+                elif self.grid[i][j] == "e":
+                    color = red
+                elif self.grid[i][j] == " ":
+                    color = white
+                elif self.grid[i][j] == "*":
+                    color = gray2
+                elif self.grid[i][j] == "p":
+                    color = green
+                new_cell = pygame.Rect(j * self.size, i * self.size, self.size,
+                                       self.size)
+                pygame.draw.rect(screen, color, new_cell)
+
     # Create the maze using depth_first_search
     def depth_first_search(self, visited, screen):
         while self.stack:
@@ -52,7 +80,10 @@ class Grid:
             pygame.draw.rect(screen, (207, 43, 251), search_cell)
             pygame.display.update()
             pygame.display.flip()
-            pygame.time.wait(50)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
             if unvisited_neighbors:
                 next_pos = random.choice(unvisited_neighbors)
                 next_x, next_y = next_pos
