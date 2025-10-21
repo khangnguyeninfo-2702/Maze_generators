@@ -10,6 +10,8 @@ blue = (0, 0, 255)
 gray = (128, 128, 128)
 gray2 = (155, 155, 155)
 yellow = (255, 255, 0)
+orange = (245, 127, 0)
+purple = (207, 43, 251)
 
 class Grid:
     def __init__(self, cell_size, dimension):
@@ -42,6 +44,10 @@ class Grid:
         generator_visit = set()
         generator_visit.add(self.start)
         self.stack.append(self.start)
+        screen.fill(black)
+        pygame.display.update()
+        self.draw_maze(screen)
+        print("Drawn maze successfully")
         self.depth_first_search(generator_visit, screen)
         print("Created maze successfully")
         self.solve_DFS()
@@ -49,24 +55,18 @@ class Grid:
         self.print_grid()
         print("Set successfully!")
 
+    def draw_cell(self, screen, i, j, color):
+        cell = pygame.Rect(j * self.size, i * self.size, self.size, self.size)
+        pygame.draw.rect(screen, color, cell)
+        return cell
+
     def draw_maze(self, screen):
-        color = None
+        match_color_symbol = {"s":yellow, "e": red, " ": white, "*": gray2, "p": green}
         for i in range(len(self.grid)):
             row_length = len(self.grid[i])
             for j in range(row_length):
-                if self.grid[i][j] == "s":
-                    color = yellow
-                elif self.grid[i][j] == "e":
-                    color = red
-                elif self.grid[i][j] == " ":
-                    color = white
-                elif self.grid[i][j] == "*":
-                    color = gray2
-                elif self.grid[i][j] == "p":
-                    color = green
-                new_cell = pygame.Rect(j * self.size, i * self.size, self.size,
-                                       self.size)
-                pygame.draw.rect(screen, color, new_cell)
+                color = match_color_symbol[self.grid[i][j]]
+                self.draw_cell(screen, i, j, color)
 
     # Create the maze using depth_first_search
     def depth_first_search(self, visited, screen):
@@ -75,11 +75,10 @@ class Grid:
             current_x, current_y = current_pos
             unvisited_neighbors = self._get_neighbors(current_pos, self._directions, "*", visited)
             # Try to draw on screen
-            screen.fill((0, 0, 0))
-            search_cell = pygame.Rect(current_y * self.size, current_x * self.size, self.size, self.size)
-            pygame.draw.rect(screen, (207, 43, 251), search_cell)
-            pygame.display.update()
-            pygame.display.flip()
+            if current_pos != self.start and len(self.stack)>1:
+                self.draw_cell(screen, current_x, current_y, orange)
+            self.draw_cell(screen, current_x, current_y, purple)
+            update_rects = []
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -88,12 +87,24 @@ class Grid:
                 next_pos = random.choice(unvisited_neighbors)
                 next_x, next_y = next_pos
                 # Mark cell as new path
-                self.grid[(current_x + next_x) // 2][(current_y + next_y) // 2] = " "
+                middle_cell_x = (current_x + next_x) // 2
+                middle_cell_y = (current_y + next_y) // 2
+                self.grid[middle_cell_x][middle_cell_y] = " "
+                middle_cell = self.draw_cell(screen, middle_cell_x, middle_cell_y, orange)
+                update_rects.append(middle_cell)
                 self.grid[next_x][next_y] = " "
+                next_cell = self.draw_cell(screen, next_x, next_y, orange)
+                update_rects.append(next_cell)
                 visited.add(next_pos)
                 self.stack.append(next_pos)
+                pygame.time.wait(1)
             else:
+                if self.grid[current_x][current_y] == "s":
+                    start_cell = self.draw_cell(screen, current_x, current_y, yellow)
+                    update_rects.append(start_cell)
                 self.stack.pop()
+            if update_rects:
+                pygame.display.update(update_rects)
 
     # Solve the maze using DFS algorithm
     def solve_DFS(self):

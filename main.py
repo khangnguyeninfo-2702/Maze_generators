@@ -72,7 +72,6 @@ def choose_dimension_screen():
                         grid = Grid(cell_dimension_map[(maze_size[0], maze_size[1])], maze_size)
                         grid.set_start_end(screen)
                         created_grid = True
-                        print("Created grid successfully")
                         run_dimension = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
