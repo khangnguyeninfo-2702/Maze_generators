@@ -1,7 +1,6 @@
 import random
 import pygame
 import sys
-# Test commit
 
 white = (255, 255, 255)
 black = (0, 0, 0)
