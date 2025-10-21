@@ -1,6 +1,7 @@
 import random
 import pygame
 import sys
+# Test commit
 
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -61,7 +62,7 @@ class Grid:
         return cell
 
     def draw_maze(self, screen):
-        match_color_symbol = {"s":yellow, "e": red, " ": white, "*": gray2, "p": green}
+        match_color_symbol = {"s":yellow, "e": red, " ": white, "*": black, "p": green}
         for i in range(len(self.grid)):
             row_length = len(self.grid[i])
             for j in range(row_length):
@@ -105,7 +106,9 @@ class Grid:
                 self.stack.pop()
             if update_rects:
                 pygame.display.update(update_rects)
-
+    # Create the maze using BFS
+    def breadth_first_search(self, visited, screen):
+        pass
     # Solve the maze using DFS algorithm
     def solve_DFS(self):
         current_x, current_y = self.start
