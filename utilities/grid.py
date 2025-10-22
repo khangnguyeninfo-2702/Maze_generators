@@ -1,7 +1,7 @@
 import random
 import pygame
 import sys
-# Testing 4
+
 white = (255, 255, 255)
 black = (0, 0, 0)
 green = (0, 255, 0)
@@ -29,6 +29,8 @@ class Grid:
         self.start = (0, 0)
         self.end = (self.row - 2, self.col - 2)
         self.stack = []
+        self._frontier = []
+        self._in =[]
         self.grid = []
         self._generate_grid()
 
@@ -45,10 +47,11 @@ class Grid:
         generator_visit.add(self.start)
         self.stack.append(self.start)
         screen.fill(black)
-        pygame.display.update()
         self.draw_maze(screen)
+        pygame.display.update()
         print("Drawn maze successfully")
-        self.depth_first_search(generator_visit, screen)
+        #self.depth_first_search(generator_visit, screen)
+        self.prim_algorithm(screen)
         print("Created maze successfully")
         self.solve_DFS()
         print("Solved maze successfully")
@@ -105,9 +108,7 @@ class Grid:
                 self.stack.pop()
             if update_rects:
                 pygame.display.update(update_rects)
-    # Create the maze using BFS
-    def breadth_first_search(self, visited, screen):
-        pass
+
     # Solve the maze using DFS algorithm
     def solve_DFS(self):
         current_x, current_y = self.start
@@ -136,21 +137,6 @@ class Grid:
         self.grid[self.start[0]][self.start[1]] = "s"
         self.grid[self.end[0]][self.end[1]] = "e"
 
-    """def _breadth_first_search(self):
-        while self.stack:
-            current_pos = self.stack[0]
-            current_x, current_y = current_pos
-            unvisited_neighbors = self._get_neighbors(current_pos)
-            if unvisited_neighbors:
-                next_pos = random.choice(unvisited_neighbors)
-                next_x, next_y = next_pos
-                self.grid[(current_x+next_x)//2][(current_y+next_y)//2] = " "
-                self.grid[next_x][next_y] = " "
-                self.stack.append(next_pos)
-            else:
-                self.stack.pop(0)
-        self.grid[self.end[0]][self.end[1]] = "e"""
-
     # Get the neighbors based on current position
     def _get_neighbors(self, start, directions, symbol, visited_list):
         current_x = start[0]
@@ -161,6 +147,19 @@ class Grid:
             next_y = current_y + dir[1]
             if 0 <= next_x < self.row and 0 <= next_y < self.col:
                 if self.grid[next_x][next_y] == symbol and (next_x, next_y) not in visited_list:
+                    neighbors.append((next_x, next_y))
+        return neighbors
+
+    # Find neighbors that has already been visited for prim's algorithm
+    def find_visited_neighbors(self, start, direction, symbol, visited_list):
+        current_x = start[0]
+        current_y = start[1]
+        neighbors = []
+        for dir in direction:
+            next_x = current_x + dir[0]
+            next_y = current_y + dir[1]
+            if 0 <= next_x < self.row and 0 <= next_y < self.col:
+                if self.grid[next_x][next_y] == symbol and (next_x, next_y) in visited_list:
                     neighbors.append((next_x, next_y))
         return neighbors
 
