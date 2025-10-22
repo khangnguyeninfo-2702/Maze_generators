@@ -30,7 +30,7 @@ class Grid:
         self.end = (self.row - 2, self.col - 2)
         self.stack = []
         self._frontier = []
-        self._in =[]
+        self._in = set()
         self.grid = []
         self._generate_grid()
 
@@ -109,6 +109,40 @@ class Grid:
             if update_rects:
                 pygame.display.update(update_rects)
 
+        # Create the maze using Prim's algorithm
+    def prim_algorithm(self, screen):
+        self._in.add(self.start)
+        self._frontier = set(self._get_neighbors(self.start, self._directions, "*", self._in))
+        self.grid[self.start[0]][self.start[1]] = " "
+        while self._frontier:
+            next_pos = random.choice(list(self._frontier))
+            self._frontier.remove(next_pos)
+            next_x, next_y = next_pos
+            update_rects = []
+            visited_neighbors = self.find_visited_neighbors(next_pos, self._directions, " ", self._in)
+            if visited_neighbors:
+                adjacent_cell = random.choice(visited_neighbors)
+                adjacent_x, adjacent_y = adjacent_cell
+                middle_cell_x = (adjacent_x + next_x) // 2
+                middle_cell_y = (adjacent_y + next_y) // 2
+                middle_cell = self.draw_cell(screen, middle_cell_x, middle_cell_y, orange)
+                next_cell = self.draw_cell(screen, next_x, next_y, orange)
+                self.grid[next_x][next_y] = " "
+                self._in.add(next_pos)
+                self.grid[middle_cell_x][middle_cell_y] = " "
+                update_rects.append(middle_cell)
+                update_rects.append(next_cell)
+            new_frontier = self._get_neighbors(next_pos, self._directions, "*", self._in)
+            for neighbor in new_frontier:
+                self._frontier.add(neighbor)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            if update_rects:
+                pygame.display.update(update_rects)
+        self.grid[self.start[0]][self.start[1]] = "s"
+        self.grid[self.end[0]][self.end[1]] = "e"
     # Solve the maze using DFS algorithm
     def solve_DFS(self):
         current_x, current_y = self.start
