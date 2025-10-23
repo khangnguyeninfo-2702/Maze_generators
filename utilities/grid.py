@@ -54,6 +54,7 @@ class Grid:
         self.prim_algorithm(screen)
         print("Created maze successfully")
         self.solve_DFS(screen)
+        #self.solve_BFS(screen)
         print("Solved maze successfully")
         self.print_grid()
         print("Set successfully!")
@@ -178,8 +179,38 @@ class Grid:
         self.grid[self.end[0]][self.end[1]] = "e"
         print(f"Total steps taken: {count}")
     # Solve the maze using BFS algorithm.
-    def solve_BFS(self):
-        pass
+    def solve_BFS(self, screen):
+        current_x, current_y = self.start
+        visited = set()
+        visited.add(self.start)
+        unvisited = self._get_neighbors(self.start, self._solve_directions, " ", visited)
+        while True:
+            next_pos = unvisited.pop(0)
+            visited.add(next_pos)
+            if next_pos == self.end:
+                break
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            self.draw_cell(screen, current_x, current_y, purple)
+            pygame.display.update()
+            current_x, current_y = next_pos
+            next_neighbors = self._get_neighbors(next_pos, self._solve_directions, " ", visited)
+            if next_neighbors:
+                for neighbor in next_neighbors:
+                    unvisited.append(neighbor)
+                    if neighbor == self.end:
+                        visited.add(neighbor)
+                        break
+            if len(unvisited) == 0:
+                print("Visited all cells")
+                break
+        for cell in visited:
+            self.grid[cell[0]][cell[1]] = "p"
+        self.grid[self.start[0]][self.start[1]] = "s"
+        self.grid[self.end[0]][self.end[1]] = "e"
+
     # Get the neighbors based on current position
     def _get_neighbors(self, start, directions, symbol, visited_list):
         current_x = start[0]
