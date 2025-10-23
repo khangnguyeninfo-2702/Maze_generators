@@ -1,6 +1,8 @@
 import random
 import pygame
 import sys
+from collections import deque
+from .cell import Cell
 
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -31,6 +33,10 @@ class Grid:
         self.stack = []
         self._frontier = []
         self._in = set()
+        self._grid_cell = {}
+        for i in range(self.row):
+            for j in range(self.col):
+                self._grid_cell[(i, j)] = Cell((i, j))
         self.grid = []
         self._generate_grid()
 
@@ -53,10 +59,10 @@ class Grid:
         #self.depth_first_search(generator_visit, screen)
         self.prim_algorithm(screen)
         print("Created maze successfully")
-        self.solve_DFS(screen)
-        #self.solve_BFS(screen)
+        #self.solve_DFS(screen)
+        self.solve_BFS(screen)
         print("Solved maze successfully")
-        self.print_grid()
+        #self.print_grid()
         print("Set successfully!")
 
     def draw_cell(self, screen, i, j, color):
@@ -180,34 +186,42 @@ class Grid:
         print(f"Total steps taken: {count}")
     # Solve the maze using BFS algorithm.
     def solve_BFS(self, screen):
-        current_x, current_y = self.start
         visited = set()
         visited.add(self.start)
-        unvisited = self._get_neighbors(self.start, self._solve_directions, " ", visited)
-        while True:
-            next_pos = unvisited.pop(0)
-            visited.add(next_pos)
-            if next_pos == self.end:
+        end_cell = None
+        start_cell = self._grid_cell[self.start]
+        queue = deque([start_cell])
+        while queue:
+            current_cell = queue.popleft()
+            current_pos = current_cell.position
+            if current_pos == self.end:
+                end_cell = current_cell
                 break
+            neighbors = self._get_neighbors(current_pos, self._solve_directions, " ", visited)
+            for next_pos in neighbors:
+                visited.add(next_pos)
+                next_cell = self._grid_cell[next_pos]
+                if next_pos == self.end:
+                    end_cell = next_cell
+                    end_cell.add_parent(current_cell)
+                    break
+                next_cell.add_parent(current_cell)
+                queue.append(next_cell)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-            self.draw_cell(screen, current_x, current_y, purple)
-            pygame.display.update()
-            current_x, current_y = next_pos
-            next_neighbors = self._get_neighbors(next_pos, self._solve_directions, " ", visited)
-            if next_neighbors:
-                for neighbor in next_neighbors:
-                    unvisited.append(neighbor)
-                    if neighbor == self.end:
-                        visited.add(neighbor)
-                        break
-            if len(unvisited) == 0:
-                print("Visited all cells")
-                break
-        for cell in visited:
-            self.grid[cell[0]][cell[1]] = "p"
+            if current_pos != self.start:
+                self.draw_cell(screen, current_pos[0], current_pos[1], purple)
+                pygame.display.update()
+            pygame.time.wait(10)
+        if end_cell:
+            solution = end_cell.backtrack()
+            print(f"Solution found with {len(solution)} steps.")
+            for position in solution:
+                self.grid[position[0]][position[1]] = "p"
+        else:
+            print("No solution")
         self.grid[self.start[0]][self.start[1]] = "s"
         self.grid[self.end[0]][self.end[1]] = "e"
 
