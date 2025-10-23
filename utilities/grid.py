@@ -190,6 +190,8 @@ class Grid:
         visited.add(self.start)
         end_cell = None
         start_cell = self._grid_cell[self.start]
+        # Use deque as a doubled ended queue for time efficiency, popping from the left is O(1).
+        # When a list is used, popping takes O(n) time.
         queue = deque([start_cell])
         while queue:
             current_cell = queue.popleft()
@@ -201,11 +203,14 @@ class Grid:
             for next_pos in neighbors:
                 visited.add(next_pos)
                 next_cell = self._grid_cell[next_pos]
+                # If the next position is the end then sets end cell to it and create its parent.
                 if next_pos == self.end:
                     end_cell = next_cell
                     end_cell.add_parent(current_cell)
                     break
-                next_cell.add_parent(current_cell)
+                # If the next cell already has a parent then keeps that parent, if not then add the current cell as parent
+                if next_cell.get_parent() is None:
+                    next_cell.add_parent(current_cell)
                 queue.append(next_cell)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
