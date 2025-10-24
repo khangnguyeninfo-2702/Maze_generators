@@ -61,6 +61,9 @@ class Grid:
         #self.solve_DFS(screen)
         self.solve_BFS(screen)
         print("Solved maze successfully")
+        for position, cell in self._grid_cell.items():
+            if self.grid[position[0]][position[1]] == " ":
+                cell.draw_distance(screen, self.size)
         #self.print_grid()
         print("Set successfully!")
         pygame.display.update()
