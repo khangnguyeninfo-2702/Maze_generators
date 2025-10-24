@@ -90,6 +90,7 @@ def game_play(current_grid):
     while run:
         screen.fill(black)
         current_grid.draw_maze(screen)
+        current_grid.blit_distance(screen)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()

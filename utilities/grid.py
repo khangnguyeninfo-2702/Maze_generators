@@ -61,12 +61,14 @@ class Grid:
         #self.solve_DFS(screen)
         self.solve_BFS(screen)
         print("Solved maze successfully")
-        for position, cell in self._grid_cell.items():
-            if self.grid[position[0]][position[1]] == " ":
-                cell.draw_distance(screen, self.size)
         #self.print_grid()
         print("Set successfully!")
-        pygame.display.update()
+
+    def blit_distance(self, screen):
+        for position, cell in self._grid_cell.items():
+            symbol = self.grid[position[0]][position[1]]
+            if symbol != "*":
+                cell.draw_distance(screen, self.size)
 
     def draw_cell(self, screen, i, j, color):
         cell = pygame.Rect(j * self.size, i * self.size, self.size, self.size)
@@ -219,9 +221,8 @@ class Grid:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-            if current_pos != self.start:
-                self.draw_cell(screen, current_pos[0], current_pos[1], purple)
-                pygame.display.update()
+            self.draw_cell(screen, current_pos[0], current_pos[1], purple)
+            pygame.display.update()
         if end_cell:
             solution = end_cell.backtrack()
             print(f"Solution found with {len(solution)} steps.")
