@@ -15,7 +15,7 @@ class Cell:
         self.parent = parent.position
 
     def draw_distance(self, screen, cell_size):
-        font = pygame.font.Font(None, 20)
+        font = pygame.font.Font(None, 15)
         distance_text = font.render(f"{self.step_to_end}", True, distance_color)
         screen.blit(distance_text, (self.position[1]*cell_size, self.position[0]*cell_size))
 

@@ -4,6 +4,7 @@ import sys
 from collections import deque
 from .cell import Cell
 
+# Make steps taken to find the solution
 white = (255, 255, 255)
 black = (0, 0, 0)
 green = (0, 255, 0)
@@ -188,18 +189,22 @@ class Grid:
             self.grid[coors[0]][coors[1]] = "p"
         self.grid[self.start[0]][self.start[1]] = "s"
         self.grid[self.end[0]][self.end[1]] = "e"
+        print(f"Solution found with {len(stack)} steps")
         print(f"Total steps taken: {count}")
+
     # Solve the maze using BFS algorithm.
     def solve_BFS(self, screen):
         visited = set()
         visited.add(self.start)
         end_cell = None
         start_cell = self._grid_cell[self.start]
+        count = 0
         # Use deque as a doubled ended queue for time efficiency, popping from the left is O(1).
         # When a list is used, popping takes O(n) time.
         queue = deque([start_cell])
         while queue:
             current_cell = queue.popleft()
+            count += 1
             current_pos = current_cell.position
             if current_pos == self.end:
                 end_cell = current_cell
@@ -232,6 +237,7 @@ class Grid:
             print("No solution")
         self.grid[self.start[0]][self.start[1]] = "s"
         self.grid[self.end[0]][self.end[1]] = "e"
+        print(f"Total steps taken: {count}")
 
     def solve_RHS(self, screen):
         pass
