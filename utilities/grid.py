@@ -36,7 +36,7 @@ class Grid:
         self._grid_cell = {}
         for i in range(self.row):
             for j in range(self.col):
-                self._grid_cell[(i, j)] = Cell((i, j))
+                self._grid_cell[(i, j)] = Cell((i, j), self.end)
         self.grid = []
         self._generate_grid()
 
@@ -54,7 +54,6 @@ class Grid:
         self.stack.append(self.start)
         screen.fill(black)
         self.draw_maze(screen)
-        pygame.display.update()
         print("Drawn maze successfully")
         #self.depth_first_search(generator_visit, screen)
         self.prim_algorithm(screen)
@@ -64,6 +63,7 @@ class Grid:
         print("Solved maze successfully")
         #self.print_grid()
         print("Set successfully!")
+        pygame.display.update()
 
     def draw_cell(self, screen, i, j, color):
         cell = pygame.Rect(j * self.size, i * self.size, self.size, self.size)
@@ -219,7 +219,6 @@ class Grid:
             if current_pos != self.start:
                 self.draw_cell(screen, current_pos[0], current_pos[1], purple)
                 pygame.display.update()
-            pygame.time.wait(10)
         if end_cell:
             solution = end_cell.backtrack()
             print(f"Solution found with {len(solution)} steps.")
@@ -229,6 +228,9 @@ class Grid:
             print("No solution")
         self.grid[self.start[0]][self.start[1]] = "s"
         self.grid[self.end[0]][self.end[1]] = "e"
+
+    def solve_RHS(self, screen):
+        pass
 
     # Get the neighbors based on current position
     def _get_neighbors(self, start, directions, symbol, visited_list):

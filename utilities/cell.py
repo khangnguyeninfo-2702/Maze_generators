@@ -1,8 +1,13 @@
+import pygame
+
+blue = (0,0,255)
+
 class Cell:
-    def __init__(self, coordinate):
+    def __init__(self, coordinate, end):
         self.parent_cell = None
         self.position = coordinate
         self.parent = None
+        self.step_to_end = end[0] - self.position[0] + end[1] - self.position[1]
     
     def add_parent(self, parent):
         self.parent_cell = parent
