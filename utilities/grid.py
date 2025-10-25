@@ -121,7 +121,7 @@ class Grid:
             if update_rects:
                 pygame.display.update(update_rects)
 
-        # Create the maze using Prim's algorithm
+    # Create the maze using Prim's algorithm
     def prim_algorithm(self, screen):
         self._in.add(self.start)
         self._frontier = set(self._get_neighbors(self.start, self._directions, "*", self._in))
@@ -267,6 +267,15 @@ class Grid:
                 if self.grid[next_x][next_y] == symbol and (next_x, next_y) in visited_list:
                     neighbors.append((next_x, next_y))
         return neighbors
+
+    def load_map(self, grid):
+        self.row = len(grid)
+        self.col = len(grid[0])
+        self.start = (0, 0)
+        self.end = (self.row-2, self.col-2)
+        for i in range(self.row):
+            for j in range(self.col):
+                self._grid_cell[(i,j)] = Cell((i,j), self.end)
 
     # Print out grid to visualize
     def print_grid(self):
