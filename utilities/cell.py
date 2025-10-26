@@ -1,5 +1,4 @@
 import pygame
-import sys
 
 distance_color = (0, 0, 0)
 

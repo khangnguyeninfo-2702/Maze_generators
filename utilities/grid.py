@@ -4,6 +4,13 @@ import sys
 from collections import deque
 from .cell import Cell
 
+def event_handler():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    pygame.display.update()
+
 # Make steps taken to find the solution
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -59,8 +66,9 @@ class Grid:
         #self.depth_first_search(generator_visit, screen)
         self.prim_algorithm(screen)
         print("Created maze successfully")
-        #self.solve_DFS(screen)
-        self.solve_BFS(screen)
+        self.solve_DFS(screen)
+        #self.solve_BFS(screen)
+        #self.solve_RHR(screen)
         print("Solved maze successfully")
         #self.print_grid()
         print("Set successfully!")
@@ -95,10 +103,7 @@ class Grid:
                 self.draw_cell(screen, current_x, current_y, orange)
             self.draw_cell(screen, current_x, current_y, purple)
             update_rects = []
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+            event_handler()
             if unvisited_neighbors:
                 next_pos = random.choice(unvisited_neighbors)
                 next_x, next_y = next_pos
@@ -120,6 +125,7 @@ class Grid:
                 self.stack.pop()
             if update_rects:
                 pygame.display.update(update_rects)
+            event_handler()
 
     # Create the maze using Prim's algorithm
     def prim_algorithm(self, screen):
@@ -147,12 +153,9 @@ class Grid:
             new_frontier = self._get_neighbors(next_pos, self._directions, "*", self._in)
             for neighbor in new_frontier:
                 self._frontier.add(neighbor)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
             if update_rects:
                 pygame.display.update(update_rects)
+            event_handler()
         self.grid[self.start[0]][self.start[1]] = "s"
     # Solve the maze using DFS algorithm
     def solve_DFS(self, screen):
@@ -222,12 +225,8 @@ class Grid:
                 if next_cell.get_parent() is None:
                     next_cell.add_parent(current_cell)
                 queue.append(next_cell)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
             self.draw_cell(screen, current_pos[0], current_pos[1], purple)
-            pygame.display.update()
+            event_handler()
         if end_cell:
             solution = end_cell.backtrack()
             print(f"Solution found with {len(solution)} steps.")
@@ -239,47 +238,19 @@ class Grid:
         self.grid[self.end[0]][self.end[1]] = "e"
         print(f"Total steps taken: {count}")
 
-    def solve_RHS(self, screen):
-        # create direction to prioritize sticking to the right hand side
-        direction = [(-1,0), (0,-1), (0,1), (1,0)]
-        start_cell = self._grid_cell[self.start]
-        queue = deque([start_cell])
-        steps = 0
-        visit_set = set(self.start)
-        while queue:
-            steps += 1
-            end_cell = None
-            current_cell = queue.popleft()
-            current_pos = current_cell.position
-            neighbors = set(self._get_neighbors(current_pos, direction, " ", visit_set))
-            if current_pos == self.end:
-                end_cell = current_cell
-                break
-            if neighbors:
-                next_pos = neighbors.pop()
-                next_cell = self._grid_cell[next_pos]
-                next_cell.add_parent(current_cell)
-                visit_set.add(next_pos)
-                queue.append(next_cell)
-                if next_pos == self.end:
-                    end_cell = next_cell
-                    break
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-        solution_path = end_cell.backtrack()
-        for pos in solution_path:
+    def solve_RHR(self, screen):
+        """current_direction = (1, 0)
+        end_cell = self._grid_cell[self.end]
+        solution = end_cell.backtrack()
+        for pos in solution:
             x, y = pos[0], pos[1]
             self.grid[x][y] = "p"
-        self.grid[self.start[0]][self.start[1]]="s"
-        self.grid[self.end[0]][self.end[1]] = "e"
+        self.grid[self.start[0]][self.start[1]] = "s"
+        self.grid[self.end[0]][self.end[1]] = "e"""
+        pass
 
-
-
-
-
-
+    def _get_direction(self, current_direction, current_position ,next_position):
+        pass
 
     # Get the neighbors based on current position
     def _get_neighbors(self, start, directions, symbol, visited_list):

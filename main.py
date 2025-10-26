@@ -62,15 +62,17 @@ def get_maze_file(file_name):
 
 
 def load_maze(file_name):
+    """
+    Function converts a maze in a file to a grid list.
+    :param file_name
+    :return: list
+    """
     grid = []
     with open(file_name, 'r') as f:
         for line in f:
             new_line = line.strip("\n")
             grid.append(new_line)
-    print(grid)
     return grid
-
-load_maze("test_maze.txt")
 
 def choose_dimension_screen():
     run_dimension = True
