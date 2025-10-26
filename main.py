@@ -53,6 +53,14 @@ def text_to_dimension(dimension_text):
     dimension_text = [int(dimension_text[0]), int(dimension_text[1])]
     return dimension_text
 
+def get_maze_file(file_name):
+    maze_grid = []
+    with open(file_name, "r") as f:
+        for line in f:
+            maze_grid.append(line)
+    return maze_grid
+
+
 def choose_dimension_screen():
     run_dimension = True
     created_grid = False
