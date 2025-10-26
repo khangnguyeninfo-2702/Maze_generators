@@ -61,8 +61,16 @@ def get_maze_file(file_name):
     return maze_grid
 
 
-def load_maze():
-    pass
+def load_maze(file_name):
+    grid = []
+    with open(file_name, 'r') as f:
+        for line in f:
+            new_line = line.strip("\n")
+            grid.append(new_line)
+    print(grid)
+    return grid
+
+load_maze("test_maze.txt")
 
 def choose_dimension_screen():
     run_dimension = True
