@@ -240,7 +240,46 @@ class Grid:
         print(f"Total steps taken: {count}")
 
     def solve_RHS(self, screen):
-        pass
+        # create direction to prioritize sticking to the right hand side
+        direction = [(-1,0), (0,-1), (0,1), (1,0)]
+        start_cell = self._grid_cell[self.start]
+        queue = deque([start_cell])
+        steps = 0
+        visit_set = set(self.start)
+        while queue:
+            steps += 1
+            end_cell = None
+            current_cell = queue.popleft()
+            current_pos = current_cell.position
+            neighbors = set(self._get_neighbors(current_pos, direction, " ", visit_set))
+            if current_pos == self.end:
+                end_cell = current_cell
+                break
+            if neighbors:
+                next_pos = neighbors.pop()
+                next_cell = self._grid_cell[next_pos]
+                next_cell.add_parent(current_cell)
+                visit_set.add(next_pos)
+                queue.append(next_cell)
+                if next_pos == self.end:
+                    end_cell = next_cell
+                    break
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+        solution_path = end_cell.backtrack()
+        for pos in solution_path:
+            x, y = pos[0], pos[1]
+            self.grid[x][y] = "p"
+        self.grid[self.start[0]][self.start[1]]="s"
+        self.grid[self.end[0]][self.end[1]] = "e"
+
+
+
+
+
+
 
     # Get the neighbors based on current position
     def _get_neighbors(self, start, directions, symbol, visited_list):
