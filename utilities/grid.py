@@ -137,7 +137,7 @@ class Grid:
             self._frontier.remove(next_pos)
             next_x, next_y = next_pos
             update_rects = []
-            visited_neighbors = self.find_visited_neighbors(next_pos, self._directions, " ", self._in)
+            visited_neighbors = self._find_visited_neighbors(next_pos, self._directions, " ", self._in)
             if visited_neighbors:
                 adjacent_cell = random.choice(visited_neighbors)
                 adjacent_x, adjacent_y = adjacent_cell
@@ -157,6 +157,7 @@ class Grid:
                 pygame.display.update(update_rects)
             event_handler()
         self.grid[self.start[0]][self.start[1]] = "s"
+
     # Solve the maze using DFS algorithm
     def solve_DFS(self, screen):
         current_x, current_y = self.start
@@ -239,7 +240,7 @@ class Grid:
         print(f"Total steps taken: {count}")
 
     def solve_RHR(self, screen):
-        """current_direction = (1, 0)
+        """current_direction = (0, 1)
         end_cell = self._grid_cell[self.end]
         solution = end_cell.backtrack()
         for pos in solution:
@@ -249,8 +250,21 @@ class Grid:
         self.grid[self.end[0]][self.end[1]] = "e"""
         pass
 
+    # Function to get direction if move from current to next based on the 3 parameters listed below
     def _get_direction(self, current_direction, current_position ,next_position):
-        pass
+        move_x = next_position[0] - current_position[0]
+        move_y = next_position[1] - current_position[1]
+        move_direction = (move_x, move_y)
+        dx, dy = current_direction
+        straight = current_direction
+        backward = (-dx, -dy)
+        right = (dy, -dx)
+        left = (-dy, dx)
+        direction_map = {"straight": straight, "backward": backward, "right": right, "left": left}
+        for key, values in direction_map.items():
+            if move_direction == values:
+                return key
+        return None
 
     # Get the neighbors based on current position
     def _get_neighbors(self, start, directions, symbol, visited_list):
@@ -266,7 +280,7 @@ class Grid:
         return neighbors
 
     # Find neighbors that has already been visited for prim's algorithm
-    def find_visited_neighbors(self, start, direction, symbol, visited_list):
+    def _find_visited_neighbors(self, start, direction, symbol, visited_list):
         current_x = start[0]
         current_y = start[1]
         neighbors = []
