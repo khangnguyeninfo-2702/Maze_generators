@@ -317,7 +317,10 @@ class Grid:
                 self._grid_cell[(i,j)] = Cell((i,j), self.end)
 
     def save_maze(self, file_name):
-        maze_content = "\n".join(self.grid)
+        maze_content = ""
+        for row in self.grid:
+            maze_content += "".join(row)
+            maze_content += "\n"
         with open(file_name, "w") as f:
             f.write(maze_content)
 

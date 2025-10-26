@@ -61,6 +61,9 @@ def get_maze_file(file_name):
     return maze_grid
 
 
+def load_maze():
+    pass
+
 def choose_dimension_screen():
     run_dimension = True
     created_grid = False
@@ -79,6 +82,8 @@ def choose_dimension_screen():
                         maze_size = text_to_dimension(button.text_input)
                         grid = Grid(cell_dimension_map[(maze_size[0], maze_size[1])], maze_size)
                         grid.set_start_end(screen)
+                        grid.save_maze("test_maze.txt")
+                        print("Saved maze")
                         created_grid = True
                         run_dimension = False
             if event.type == pygame.KEYDOWN:
