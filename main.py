@@ -113,7 +113,7 @@ def game_play(current_grid):
     while run:
         screen.fill(black)
         current_grid.draw_maze(screen)
-        current_grid.blit_distance(screen)
+        """current_grid.blit_distance(screen)"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -130,6 +130,7 @@ input_dimension = Button(None, "Choose maze dimensions", (width/2, height/3),get
 (227, 84, 49), (227, 152, 49))
 play_button = Button(None, "Play game", (width/2, height*2/3), get_font(30), (227, 84, 49), (227, 152, 49))
 main_buttons = [input_dimension, play_button]
+input_file = None
 #Choose dimension buttons
 dimension_buttons = []
 for i in range(1,len(dimensions)+1):
