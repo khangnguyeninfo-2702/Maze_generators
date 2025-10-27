@@ -12,16 +12,23 @@ def event_handler():
     pygame.display.update()
 
 # Make steps taken to find the solution
-white = (255, 255, 255)
+saturated_orange = (255, 102, 0)
 black = (0, 0, 0)
+yellow_green = (127, 255, 0)
 green = (0, 255, 0)
-red = (255, 0, 0)
+hot_pink = (255, 0, 127)
 blue = (0, 0, 255)
 gray = (128, 128, 128)
 gray2 = (155, 155, 155)
-yellow = (255, 255, 0)
+dark_blue = (0, 51, 102)
 orange = (245, 127, 0)
 purple = (207, 43, 251)
+orange_pallete = [(255, 140, 0), #Dark orange
+                  (255, 127, 80), #Coral
+                  (204, 85, 0), #Burnt Orange
+                  (255, 173, 0),#Neon Orange
+                  (255, 219, 187) #Light orange
+                  ]
 
 class Grid:
     def __init__(self, cell_size, dimension):
@@ -66,9 +73,9 @@ class Grid:
         #self.depth_first_search(generator_visit, screen)
         self.prim_algorithm(screen)
         print("Created maze successfully")
-        self.solve_DFS(screen)
+        #self.solve_DFS(screen)
         #self.solve_BFS(screen)
-        #self.solve_RHR(screen)
+        self.solve_RHR(screen)
         print("Solved maze successfully")
         #self.print_grid()
         print("Set successfully!")
@@ -85,7 +92,7 @@ class Grid:
         return cell
 
     def draw_maze(self, screen):
-        match_color_symbol = {"s":yellow, "e": red, " ": white, "*": black, "p": green}
+        match_color_symbol = {"s":green, "e": hot_pink, " ": saturated_orange, "*": dark_blue, "p": yellow_green}
         for i in range(len(self.grid)):
             row_length = len(self.grid[i])
             for j in range(row_length):
@@ -120,7 +127,7 @@ class Grid:
                 self.stack.append(next_pos)
             else:
                 if self.grid[current_x][current_y] == "s":
-                    start_cell = self.draw_cell(screen, current_x, current_y, yellow)
+                    start_cell = self.draw_cell(screen, current_x, current_y, dark_blue)
                     update_rects.append(start_cell)
                 self.stack.pop()
             if update_rects:
@@ -143,8 +150,8 @@ class Grid:
                 adjacent_x, adjacent_y = adjacent_cell
                 middle_cell_x = (adjacent_x + next_x) // 2
                 middle_cell_y = (adjacent_y + next_y) // 2
-                middle_cell = self.draw_cell(screen, middle_cell_x, middle_cell_y, orange)
-                next_cell = self.draw_cell(screen, next_x, next_y, orange)
+                middle_cell = self.draw_cell(screen, middle_cell_x, middle_cell_y, saturated_orange)
+                next_cell = self.draw_cell(screen, next_x, next_y, saturated_orange)
                 self.grid[next_x][next_y] = " "
                 self._in.add(next_pos)
                 self.grid[middle_cell_x][middle_cell_y] = " "
@@ -156,7 +163,6 @@ class Grid:
             if update_rects:
                 pygame.display.update(update_rects)
             event_handler()
-        self.grid[self.start[0]][self.start[1]] = "s"
 
     # Solve the maze using DFS algorithm
     def solve_DFS(self, screen):
@@ -173,7 +179,7 @@ class Grid:
             current_pos = stack[-1]
             if current_pos == self.end:
                 break
-            """self.draw_cell(screen, current_pos[0], current_pos[1], green)
+            """self.draw_cell(screen, current_pos[0], current_pos[1], yellow_green)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -240,15 +246,42 @@ class Grid:
         print(f"Total steps taken: {count}")
 
     def solve_RHR(self, screen):
-        """current_direction = (0, 1)
-        end_cell = self._grid_cell[self.end]
-        solution = end_cell.backtrack()
-        for pos in solution:
-            x, y = pos[0], pos[1]
-            self.grid[x][y] = "p"
+        current_direction = (0, 1)
+        current_pos = self.start
+        visited_positions = set()
+        visited = set()
+        while current_pos != self.end:
+            dx, dy = current_direction
+            current_cell = self._grid_cell[current_pos]
+            neighbors = self._get_neighbors(current_pos, self._solve_directions, " ", visited)
+            visited_positions.add(current_pos)
+            all_dir = {}
+            self.draw_cell(screen, current_pos[0], current_pos[1], random.choice(orange_pallete))
+            for pos in neighbors:
+                dir = self._get_direction(current_direction, current_pos, pos)
+                all_dir[dir] = pos
+            if "right" in all_dir:
+                next_pos = all_dir["right"]
+                right = (dy, -dx)
+                current_direction = right
+            elif "straight" in all_dir:
+                next_pos = all_dir["straight"]
+            elif "left" in all_dir:
+                next_pos = all_dir["left"]
+                left = (-dy, dx)
+                current_direction = left
+            else:
+                next_pos = all_dir["backward"]
+                backward = (-dx, -dy)
+                current_direction = backward
+            next_cell = self._grid_cell[next_pos]
+            next_cell.add_parent(current_cell)
+            current_pos = next_pos
+            event_handler()
+        for pos in visited_positions:
+            self.grid[pos[0]][pos[1]] = "p"
         self.grid[self.start[0]][self.start[1]] = "s"
-        self.grid[self.end[0]][self.end[1]] = "e"""
-        pass
+        self.grid[self.end[0]][self.end[1]] = "e"
 
     # Function to get direction if move from current to next based on the 3 parameters listed below
     def _get_direction(self, current_direction, current_position ,next_position):
